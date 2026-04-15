@@ -119,12 +119,21 @@ function Prepend-ToPath {
 
 $script:RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $currentLocation = (Get-Location).Path
+$preferredVcpkgRoot = $env:VCPKG_ROOT
+$preferredToolchainFile = $env:CMAKE_TOOLCHAIN_FILE
 
 $vsRoot = Get-VsInstallRoot
 $vcvarsPath = Join-Path $vsRoot "VC\Auxiliary\Build\vcvars64.bat"
 $cmakeDir = Join-Path $vsRoot "Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin"
 
 Import-EnvironmentFromBatchFile -BatchFile $vcvarsPath
+
+if ($preferredVcpkgRoot) {
+    $env:VCPKG_ROOT = $preferredVcpkgRoot
+}
+if ($preferredToolchainFile) {
+    $env:CMAKE_TOOLCHAIN_FILE = $preferredToolchainFile
+}
 
 $pathEntries = @()
 if (Test-Path $cmakeDir) {
@@ -137,7 +146,10 @@ if ($vcpkgRoot) {
     $env:VCPKG_ROOT = $vcpkgRoot
 
     $vcpkgToolchain = Join-Path $vcpkgRoot "scripts\buildsystems\vcpkg.cmake"
-    if (Test-Path $vcpkgToolchain) {
+    if ($preferredToolchainFile) {
+        $env:CMAKE_TOOLCHAIN_FILE = $preferredToolchainFile
+    }
+    elseif (Test-Path $vcpkgToolchain) {
         $env:CMAKE_TOOLCHAIN_FILE = $vcpkgToolchain
     }
 }

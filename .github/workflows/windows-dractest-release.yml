@@ -26,6 +26,7 @@ jobs:
           git clone --depth 1 https://github.com/microsoft/vcpkg.git $vcpkgRoot
           & (Join-Path $vcpkgRoot "bootstrap-vcpkg.bat")
           "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CMAKE_TOOLCHAIN_FILE=$(Join-Path $vcpkgRoot 'scripts\buildsystems\vcpkg.cmake')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Install Windows dependencies
         shell: pwsh
