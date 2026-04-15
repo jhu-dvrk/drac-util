@@ -74,3 +74,22 @@ That creates:
 ```text
 build\windows-msvc-x64\release\dractest-Release-windows-x64.zip
 ```
+
+GitHub Actions can generate the same Windows release zip automatically using [windows-dractest-release.yml](.github/workflows/windows-dractest-release.yml).
+
+Manual trigger:
+
+1. Open the repository on GitHub.
+2. Open the `Actions` tab.
+3. Select `Windows dractest release`.
+4. Click `Run workflow`.
+5. Download the `dractest-windows-x64` artifact from that workflow run.
+
+Tagged release trigger:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Pushing a tag matching `v*` runs the same Windows build and uploads the zip to the corresponding GitHub Release.
