@@ -1,0 +1,17 @@
+dRAC portable bundle
+
+Commit: @DRACTWEAK_GIT_SHA@
+Platform: Windows x64
+
+Contents:
+- dractest.exe
+- Runtime DLLs required to launch the executable on a typical Windows machine
+
+Usage:
+1. Extract this zip to a writable directory.
+2. Run dractest.exe.
+3. Use Ethernet on Windows. FireWire is not part of the Windows release flow.
+
+Build notes:
+- This bundle was produced from the dractweak repository using the dractest_package target.
+- The application is built with the Windows MSVC preset and the Ethernet-only Amp1394 configuration.

@@ -8,6 +8,7 @@
 
 
 #include <stdlib.h>
+#include <array>
 #include <vector>
 #include <deque>
 #include <algorithm>
@@ -360,7 +361,7 @@ int main(int argc, char** argv)
     char axisString[4] = "all";
     std::string portDescription;
 
-    for (int i = 1; i < (unsigned int)argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             if (argv[i][1] == 'p') {
                 portDescription = argv[i]+2;
@@ -404,11 +405,11 @@ int main(int argc, char** argv)
 
     Port->AddBoard(board);
 
-    int num_axes = 10;
-    int motor_current_read[num_axes];
-    float motor_voltage_read[num_axes];
-    float current_setpoint[num_axes] = {0.0};
-    float voltage_setpoint[num_axes] = {0.0};
+    constexpr int num_axes = 10;
+    std::array<int, num_axes> motor_current_read{};
+    std::array<float, num_axes> motor_voltage_read{};
+    std::array<float, num_axes> current_setpoint{};
+    std::array<float, num_axes> voltage_setpoint{};
 
     board->WriteWatchdogPeriodInSeconds(1);
 
@@ -529,12 +530,13 @@ int main(int argc, char** argv)
                     if (i == 0) {
                         Amp1394_Sleep(0.5);
                     }
-                    quadlet_t data;
-                    while (i & 0xffff != data >> 16) {
+                    quadlet_t data = 0;
+                    const quadlet_t flash_index = static_cast<quadlet_t>(i & 0xffffu);
+                    while (flash_index != (data >> 16)) {
                         Port->ReadQuadlet(BoardId, 0xa031, data);
                     }
-                    flash_data[i] = data & 0xffff;
-                    printf("%x: %x\n", i, data & 0xffff);
+                    flash_data[i] = static_cast<uint16_t>(data & 0xffffu);
+                    printf("%zx: %x\n", i, data & 0xffffu);
                 }
                 std::ofstream file("espm_flash_dump.bin", std::ios::binary);
                 file.write((char*)flash_data, 0x400000 * 2);
@@ -791,7 +793,8 @@ int main(int argc, char** argv)
         static ImPlotFlags flags = ImPlotFlags_NoLegend;
         static ImPlotAxisFlags xflags = ImPlotAxisFlags_AutoFit|ImPlotAxisFlags_NoGridLines;
         static ImPlotAxisFlags yflags = ImPlotAxisFlags_AutoFit|ImPlotAxisFlags_NoGridLines;
-        if (ImPlot::BeginPlot("##Tuning","t","I",ImVec2(-1,-1),flags,xflags,yflags)) {
+        if (ImPlot::BeginPlot("##Tuning", ImVec2(-1,-1), flags)) {
+            ImPlot::SetupAxes("t", "I", xflags, yflags);
             ImPlot::PlotLine("I measured", current_history_t.data(), current_history.data(), tuning_pulse_width + 200);
             // ImPlot::PlotLine("My Line Plot", x_data, y_data, 1000);
             ImPlot::EndPlot();
@@ -801,7 +804,8 @@ int main(int argc, char** argv)
         static ImPlotAxisFlags xflags2 = ImPlotAxisFlags_AutoFit;
         static ImPlotAxisFlags yflags2 = ImPlotAxisFlags_AutoFit;        
         ImGui::Begin("Plot");
-        if (ImPlot::BeginPlot("##Plot","t","count",ImVec2(-1,-1),flags,xflags,yflags)) {
+        if (ImPlot::BeginPlot("##Plot", ImVec2(-1,-1), flags2)) {
+            ImPlot::SetupAxes("t", "count", xflags2, yflags2);
             ImPlot::PlotLine("data", plot_y, 1000);
             // ImPlot::PlotLine("My Line Plot", x_data, y_data, 1000);
             ImPlot::EndPlot();

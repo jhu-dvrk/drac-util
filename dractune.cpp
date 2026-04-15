@@ -45,11 +45,11 @@ void sleep(int t, bool wait_for_rt=true) {
 }
 
 void pass(std::string s="") {
-    std::cout << std::setw(13) << "\U0001f7e2 Pass" << std::setw(30) << s << std::endl;
+    std::cout << std::setw(13) << "[PASS]" << std::setw(30) << s << std::endl;
 }
 
 void fail(std::string s="") {
-    std::cout << std::setw(13) << "\U0001F4A9 Fail" << std::setw(30) << s << std::endl;
+    std::cout << std::setw(13) << "[FAIL]" << std::setw(30) << s << std::endl;
 }
 
 void test(std::string s) {
@@ -435,7 +435,8 @@ int main(int, char**)
             static ImPlotFlags flags = ImPlotFlags_NoLegend;
             static ImPlotAxisFlags xflags = ImPlotAxisFlags_AutoFit|ImPlotAxisFlags_NoGridLines;
             static ImPlotAxisFlags yflags = ImPlotAxisFlags_AutoFit|ImPlotAxisFlags_NoGridLines;
-            if (ImPlot::BeginPlot("##Tuning","t","I",ImVec2(-1,-1),flags,xflags,yflags)) {
+            if (ImPlot::BeginPlot("##Tuning", ImVec2(-1,-1), flags)) {
+                ImPlot::SetupAxes("t", "I", xflags, yflags);
                 ImPlot::PlotLine("I measured", current_history_t.data(), current_history.data(), tuning_pulse_width + 200);
                 ImPlot::EndPlot();
             }            

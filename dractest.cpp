@@ -44,11 +44,11 @@ void sleep(int t, bool wait_for_rt=true) {
 }
 
 void pass(std::string s="") {
-    std::cout << std::setw(13) << "\U0001f7e2 Pass" << std::setw(30) << s << std::endl;
+    std::cout << std::setw(13) << "[PASS]" << std::setw(30) << s << std::endl;
 }
 
 void fail(std::string s="") {
-    std::cout << std::setw(13) << "\U0001F4A9 Fail" << std::setw(30) << s << std::endl;
+    std::cout << std::setw(13) << "[FAIL]" << std::setw(30) << s << std::endl;
 }
 
 void test(std::string s) {
@@ -169,6 +169,8 @@ std::string get_result_string(result_t result) {
         case UNTESTED:
             return "[Untested]";
     }
+
+    return "[Unknown]";
 }
 
 void display_result(result_t r) {
@@ -361,7 +363,12 @@ void test_all() {
     // test_lvds_loopback();
     std::stringstream filename;
     auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+    std::tm tm{};
+#if defined(_WIN32)
+    localtime_s(&tm, &t);
+#else
+    tm = *std::localtime(&t);
+#endif
     std::filesystem::create_directory("dRAC_test_results");
     filename << "dRAC_test_results/dRAC_" << std::put_time(&tm, "%Y-%m-%d-%H-%M-%S") << "_" << BoardSNRead << ".txt";
     std::ofstream logfile;
@@ -371,7 +378,7 @@ void test_all() {
     logfile << "Board SN: " << BoardSNRead << std::endl;
     logfile << "Local time: " << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << std::endl;
     logfile << "Safety relay open: " << get_result_string(result_safety_relay_open) << std::endl;
-    logfile << "Safety relay close: " << get_result_string(result_safety_relay_open) << std::endl;
+    logfile << "Safety relay close: " << get_result_string(result_safety_relay_close) << std::endl;
     logfile << "MV sense: " << mv_volts_on << std::endl;
 
     logfile << "ADC zero:" << " ";
