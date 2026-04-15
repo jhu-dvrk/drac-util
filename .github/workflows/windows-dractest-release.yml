@@ -57,10 +57,10 @@ jobs:
           .\scripts\enter-windows-toolchain.ps1 -Command 'cmake --build --preset windows-release --target dractest_package --parallel'
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: dractest-windows-x64
-          path: build/windows-msvc-x64/release/dractest-Release-windows-x64.zip
+          path: build/windows-msvc-x64/release/Release/dractest
           if-no-files-found: error
 
       - name: Publish GitHub release asset
