@@ -55,6 +55,20 @@ cmake --preset windows-msvc-x64
 cmake --build --preset windows-release
 ```
 
+## Windows manual install
+
+There are two variations:  VCPKG classic mode and manifest mode. Classic mode uses the globally installed libraries (in the vcpkg directory), whereas manifest mode installs the libraries (specified in `vcpkg.json`) in the project build tree.
+
+1. Install a C++ compiler, with support for C++20. The code has been tested with Visual Studio 2022. Also, note that this compiler has been specified in `CMakePresets.json`.
+2. Install [vcpkg](https://github.com/microsoft/vcpkg). Typically, this is done by cloning the GitHub repository and then running the appropriate `bootstrap-vcpkg` script (e.g., `bootstrap-vcpkg.bat`).
+3. Set an environment variable `VCPKG_ROOT` to specify the vcpkg root directory, and then add `%VCPKG_ROOT%` to your `PATH`. This step is not strictly required, but if not done, paths will need to be specified in some of the following steps.
+4. If using VCPKG in classic mode, install glfw3 and glew:  `vcpkg install glfw3 glew` (skip this step if using VCPKG manifest mode).
+5. Clone this repository, e.g., `git clone https://github.com/jhu-dvrk/drac-util.git`
+6. This repository has submodules for imgui, implot, and mechatronics-software, so the submodules must be initialized and updated: `git submodule update --init`
+7. Run CMake, specifying the source and build directories. Choose the desired "Manual Setup" preset (VCPKG classic or manifest)
+8. Configure and generate the CMake project. If using VCPKG manifest mode, the glfw3 and glew libraries will be installed during CMake configuration.
+9. Open the project file and build the desired configuration (e.g., Debug or Release).
+
 ## Windows dractest release
 
 To stage a portable `dractest` bundle without the rest of the repo install tree:

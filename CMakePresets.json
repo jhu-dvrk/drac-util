@@ -18,7 +18,25 @@
       },
       "cacheVariables": {
         "Amp1394_HAS_RAW1394": "OFF",
-        "Amp1394_HAS_PCAP": "OFF"
+        "Amp1394_HAS_PCAP": "OFF",
+        "VCPKG_MANIFEST_MODE": "OFF"
+      }
+    },
+    {
+      "name": "manual-classic",
+      "displayName": "Manual Setup (VCPKG classic), Visual Studio 2022",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "VCPKG_MANIFEST_MODE": "OFF"
+      }
+    },
+    {
+      "name": "manual-manifest",
+      "displayName": "Manual Setup (VCPKG manifest), Visual Studio 2022",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       }
     }
   ],
