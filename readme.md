@@ -68,8 +68,9 @@ There are two variations:  VCPKG classic mode and manifest mode. Classic mode us
 7. Run CMake, specifying the source and build directories. Choose the desired "Manual Setup" preset (VCPKG classic or manifest)
 8. Configure and generate the CMake project. If using VCPKG manifest mode, the glfw3 and glew libraries will be installed during CMake configuration.
 9. Open the project file and build the desired configuration (e.g., Debug or Release).
+10. If you want to build an installer package (PACKAGE target), you will need to install [NSIS](https://nsis.sourceforge.io/Main_Page).
 
-## Windows dractest release
+## Windows dractest release (alternative to NSIS installer)
 
 To stage a portable `dractest` bundle without the rest of the repo install tree:
 
