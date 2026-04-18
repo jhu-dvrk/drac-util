@@ -366,11 +366,14 @@ void test_all() {
     std::tm tm{};
 #if defined(_WIN32)
     localtime_s(&tm, &t);
+    // Cannot create a directory in C:\Program Files, so putting it in root instead
+    std::string log_dir = "/dRAC_test_results";
 #else
     tm = *std::localtime(&t);
+    std::string log_dir = "dRAC_test_results";
 #endif
-    std::filesystem::create_directory("dRAC_test_results");
-    filename << "dRAC_test_results/dRAC_" << std::put_time(&tm, "%Y-%m-%d-%H-%M-%S") << "_" << BoardSNRead << ".txt";
+    std::filesystem::create_directory(log_dir);
+    filename << log_dir << "/dRAC_" << std::put_time(&tm, "%Y-%m-%d-%H-%M-%S") << "_" << BoardSNRead << ".txt";
     std::ofstream logfile;
     logfile.open(filename.str(), std::fstream::out);
     logfile << "dRAC Factory Test Log" << std::endl;
