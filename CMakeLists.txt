@@ -18,7 +18,7 @@ set(IMGUI_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/imgui")
 set(IMPLOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/implot")
 set(AMP1394_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/mechatronics-software")
 
-set(DRACTEST_RELEASE_COMPONENT "dractest-runtime")
+set(DRACTEST_RELEASE_COMPONENT "dractest_runtime")
 if (WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION .)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT ${DRACTEST_RELEASE_COMPONENT})
@@ -91,11 +91,13 @@ target_sources(dractune PUBLIC ${COMMON_FILES})
 target_link_libraries(dractune Amp1394 OpenGL::GL OpenGL::GLU glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
 
 
-install(TARGETS dractweak RUNTIME DESTINATION bin)
-install(TARGETS dractest RUNTIME DESTINATION bin)
-install(TARGETS dractune RUNTIME DESTINATION bin)
 
-if (WIN32)
+if (NOT WIN32)
+  install(TARGETS dractweak RUNTIME DESTINATION bin)
+  install(TARGETS dractest RUNTIME DESTINATION bin)
+  install(TARGETS dractune RUNTIME DESTINATION bin)
+
+else ()
   install(
     TARGETS dractest
     RUNTIME DESTINATION .
@@ -125,4 +127,21 @@ if (WIN32)
     COMMENT "Staging and zipping the dractest portable Windows release"
     VERBATIM
   )
+
+  set(CPACK_PACKAGE_NAME "drac-util")
+  set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "dRAC Utilities")
+  set(CPACK_PACKAGE_VENDOR "JHU")
+  set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+  set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+  set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+  set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "drac-util")
+  set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dVRK.ico")
+  set(CPACK_COMPONENTS_ALL ${DRACTEST_RELEASE_COMPONENT})
+  set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
+  set(CPACK_PACKAGE_EXECUTABLES "dractest" "dRAC Test")
+
+include(CPack)
+
 endif ()

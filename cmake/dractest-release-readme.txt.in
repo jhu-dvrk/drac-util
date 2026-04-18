@@ -13,5 +13,5 @@ Usage:
 3. Use Ethernet on Windows. FireWire is not part of the Windows release flow.
 
 Build notes:
-- This bundle was produced from the dractweak repository using the dractest_package target.
+- This bundle was produced from the drac-util repository using the dractest_package target.
 - The application is built with the Windows MSVC preset and the Ethernet-only Amp1394 configuration.
