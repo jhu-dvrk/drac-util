@@ -38,7 +38,7 @@ jobs:
       - name: Install Windows dependencies
         shell: pwsh
         run: |
-          & (Join-Path $env:VCPKG_ROOT "vcpkg.exe") install glfw3:x64-windows glew:x64-windows
+          & (Join-Path $env:VCPKG_ROOT "vcpkg.exe") --classic install glfw3:x64-windows glew:x64-windows
 
       - name: Show selected toolchain
         shell: pwsh
