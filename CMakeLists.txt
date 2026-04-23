@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(drac-util VERSION 1.0.0 LANGUAGES CXX)
+project(drac-util VERSION 1.1.0 LANGUAGES CXX)
+
+include(GNUInstallDirs)
 
 include_directories("include")
 
@@ -19,6 +21,9 @@ set(IMPLOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/implot")
 set(AMP1394_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/mechatronics-software")
 
 set(DRACTEST_RELEASE_COMPONENT "dractest_runtime")
+set(DRAC_UTIL_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+file(MAKE_DIRECTORY "${DRAC_UTIL_GENERATED_INCLUDE_DIR}")
+include_directories("${DRAC_UTIL_GENERATED_INCLUDE_DIR}")
 if (WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION .)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT ${DRACTEST_RELEASE_COMPONENT})
@@ -39,6 +44,18 @@ endif ()
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dractest-release-readme.txt.in"
   "${CMAKE_CURRENT_BINARY_DIR}/README.txt"
+  @ONLY
+)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dractest.desktop.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/dractest.desktop"
+  @ONLY
+)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/drac_util_version.h.in"
+  "${DRAC_UTIL_GENERATED_INCLUDE_DIR}/drac_util_version.h"
   @ONLY
 )
 
@@ -80,15 +97,15 @@ set(COMMON_FILES
 )
 
 target_sources(dractweak PUBLIC ${COMMON_FILES})
-target_link_libraries(dractweak Amp1394 OpenGL::GL OpenGL::GLU glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(dractweak Amp1394 OpenGL::GL glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
 
 add_executable(dractest dractest.cpp)
 target_sources(dractest PUBLIC ${COMMON_FILES})
-target_link_libraries(dractest Amp1394 OpenGL::GL OpenGL::GLU glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(dractest Amp1394 OpenGL::GL glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
 
 add_executable(dractune dractune.cpp)
 target_sources(dractune PUBLIC ${COMMON_FILES})
-target_link_libraries(dractune Amp1394 OpenGL::GL OpenGL::GLU glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
+target_link_libraries(dractune Amp1394 OpenGL::GL glfw GLEW::GLEW Threads::Threads ${CMAKE_DL_LIBS})
 
 
 
@@ -96,6 +113,26 @@ if (NOT WIN32)
   install(TARGETS dractweak RUNTIME DESTINATION bin)
   install(TARGETS dractest RUNTIME DESTINATION bin)
   install(TARGETS dractune RUNTIME DESTINATION bin)
+  install(
+    TARGETS dractest
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    COMPONENT ${DRACTEST_RELEASE_COMPONENT}
+  )
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/README.txt"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/dractest"
+    COMPONENT ${DRACTEST_RELEASE_COMPONENT}
+  )
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/dractest.desktop"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+    COMPONENT ${DRACTEST_RELEASE_COMPONENT}
+  )
+  install(
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/dractest.png"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps"
+    COMPONENT ${DRACTEST_RELEASE_COMPONENT}
+  )
 
 else ()
   install(

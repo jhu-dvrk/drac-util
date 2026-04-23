@@ -12,6 +12,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_stdlib.h"
+#include "drac_util_version.h"
 #include <stdio.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -26,7 +27,7 @@
 #include "implot.h"
 
 
-const std::string version = "1.0.0";
+constexpr auto version = drac_util::version;
 const auto mv_bit_to_volt = 1.31255e-3;
 int command_wait_time = 20;
 

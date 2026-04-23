@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=dRAC Test
+Comment=Test for dRAC hardware. Requires test board.
+Exec=dractest
+Icon=dractest
+Categories=Utility;
+Terminal=false

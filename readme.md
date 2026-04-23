@@ -9,7 +9,39 @@
 ## Linux build dependencies
 
 ```
-sudo apt install libraw1394-dev libglfw3-dev libglew-dev
+sudo apt install build-essential cmake git libraw1394-dev libglfw3-dev libglew-dev
+```
+
+## Linux build
+
+Clone the repository and initialize the submodules:
+
+```bash
+git clone https://github.com/jhu-dvrk/drac-util.git
+cd drac-util
+git submodule update --init --recursive
+```
+
+List the available presets, then configure and build with the Linux preset. This preset enables `Amp1394_HAS_RAW1394=ON` by default.
+
+```bash
+cmake --list-presets
+cmake --preset linux-gcc
+cmake --build --preset linux-release --parallel
+```
+
+## Linux AppImage release
+
+To build a `dractest` AppImage release:
+
+```bash
+./scripts/build-linux-appimage.sh
+```
+
+That stages a `dractest` AppDir from the CMake install component, downloads `linuxdeploy` if needed, and writes the release artifact to:
+
+```text
+build/linux-gcc/release/dractest-1.0.0-x86_64.AppImage
 ```
 
 ## Windows bootstrap

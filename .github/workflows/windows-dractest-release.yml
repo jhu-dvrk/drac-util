@@ -1,13 +1,10 @@
-name: Windows dractest release
+name: dractest release artifacts
 
 on:
   workflow_dispatch:
   push:
     tags:
       - "v*"
-
-permissions:
-  contents: write
 
 jobs:
   build-windows-release:
@@ -56,25 +53,90 @@ jobs:
         run: |
           .\scripts\enter-windows-toolchain.ps1 -Command 'cmake --build --preset windows-release --target dractest_package --parallel'
 
+      - name: Build installer
+        shell: pwsh
+        run: |
+          .\scripts\enter-windows-toolchain.ps1 -Command 'cmake --build --preset windows-release --target PACKAGE --parallel'
+
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
         with:
-          name: dractest-windows-x64
-          path: build/windows-msvc-x64/release/Release/dractest
+          name: dractest-windows-zip-x64
+          path: build/windows-msvc-x64/release/dractest-Release-windows-x64.zip
           if-no-files-found: error
 
-      - name: Publish GitHub release asset
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dractest-windows-installer-x64
+          path: build/windows-msvc-x64/*.exe
+          if-no-files-found: error
+
+  build-linux-release:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git libraw1394-dev libglfw3-dev libglew-dev
+
+      - name: Build AppImage
+        run: |
+          ./scripts/build-linux-appimage.sh
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dractest-linux-x86_64
+          path: build/linux-gcc/release/*.AppImage
+          if-no-files-found: error
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - build-windows-release
+      - build-linux-release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: release-assets
+
+      - name: Publish GitHub release assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: pwsh
         run: |
-          $tag = $env:GITHUB_REF_NAME
-          $zip = (Resolve-Path "build/windows-msvc-x64/release/dractest-Release-windows-x64.zip").Path
-          gh release view $tag *> $null
-          if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $zip --clobber
-          }
-          else {
-            gh release create $tag $zip --title "dractest $tag" --generate-notes
-          }
+          tag="$GITHUB_REF_NAME"
+          windows_zip=$(find release-assets/dractest-windows-zip-x64 -maxdepth 1 -type f -name '*.zip' -print -quit)
+          windows_installer=$(find release-assets/dractest-windows-installer-x64 -maxdepth 1 -type f -name '*.exe' -print -quit)
+          linux_appimage=$(find release-assets/dractest-linux-x86_64 -maxdepth 1 -type f -name '*.AppImage' -print -quit)
+
+          if [[ -z "$windows_zip" || -z "$windows_installer" || -z "$linux_appimage" ]]; then
+            echo "Missing one or more release assets" >&2
+            exit 1
+          fi
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" \
+              "$windows_zip" \
+              "$windows_installer" \
+              "$linux_appimage" \
+              --clobber
+          else
+            gh release create "$tag" \
+              "$windows_zip" \
+              "$windows_installer" \
+              "$linux_appimage" \
+              --title "dractest $tag" \
+              --generate-notes
+          fi

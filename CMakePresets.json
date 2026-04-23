@@ -7,6 +7,17 @@
   },
   "configurePresets": [
     {
+      "name": "linux-gcc",
+      "displayName": "Linux GCC",
+      "description": "Linux build with raw1394 enabled by default.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/linux-gcc",
+      "cacheVariables": {
+        "Amp1394_HAS_RAW1394": "ON",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
       "name": "windows-msvc-x64",
       "displayName": "Windows MSVC x64",
       "description": "Visual Studio 2022 x64 with FireWire disabled for the Windows Ethernet-only workflow.",
@@ -41,6 +52,10 @@
     }
   ],
   "buildPresets": [
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-gcc"
+    },
     {
       "name": "windows-debug",
       "configurePreset": "windows-msvc-x64",
