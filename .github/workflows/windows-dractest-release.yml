@@ -117,6 +117,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="$GITHUB_REF_NAME"
+          repo="$GITHUB_REPOSITORY"
           windows_zip=$(find release-assets/dractest-windows-zip-x64 -maxdepth 1 -type f -name '*.zip' -print -quit)
           windows_installer=$(find release-assets/dractest-windows-installer-x64 -maxdepth 1 -type f -name '*.exe' -print -quit)
           linux_appimage=$(find release-assets/dractest-linux-x86_64 -maxdepth 1 -type f -name '*.AppImage' -print -quit)
@@ -126,14 +127,16 @@ jobs:
             exit 1
           fi
 
-          if gh release view "$tag" >/dev/null 2>&1; then
+          if gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
             gh release upload "$tag" \
+              --repo "$repo" \
               "$windows_zip" \
               "$windows_installer" \
               "$linux_appimage" \
               --clobber
           else
             gh release create "$tag" \
+              --repo "$repo" \
               "$windows_zip" \
               "$windows_installer" \
               "$linux_appimage" \
