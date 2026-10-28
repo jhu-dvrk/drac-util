@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(drac-util VERSION 1.1.0 LANGUAGES CXX)
+project(drac-util VERSION 1.2.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
